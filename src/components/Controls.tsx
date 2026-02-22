@@ -79,6 +79,7 @@ function Controls() {
         setFlowSpeed,
         opacity,
         setOpacity,
+        reset,
     } = useControls();
 
     return (
@@ -139,6 +140,9 @@ function Controls() {
                 step={0.01}
                 onChange={setOpacity}
             />
+            <Button size="3" variant="soft" onClick={() => reset()}>
+                Reset to Default
+            </Button>
         </Flex>
     );
 }

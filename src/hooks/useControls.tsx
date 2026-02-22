@@ -1,4 +1,4 @@
-import { useContext, createContext, useState } from "react";
+import { useContext, createContext, useReducer } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Color } from "three";
 
@@ -19,37 +19,77 @@ export type Theme =
 
 export type ControlsContext = {
     open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
+    setOpen: Dispatch<boolean>;
     theme: Theme;
-    setTheme: Dispatch<SetStateAction<Theme>>;
+    setTheme: Dispatch<Theme>;
     color: Color;
-    setColor: Dispatch<SetStateAction<Color>>;
+    setColor: Dispatch<Color>;
     resolution: number;
-    setResolution: Dispatch<SetStateAction<number>>;
+    setResolution: Dispatch<number>;
     length: number;
-    setLength: Dispatch<SetStateAction<number>>;
+    setLength: Dispatch<number>;
     flowSpeed: number;
-    setFlowSpeed: Dispatch<SetStateAction<number>>;
+    setFlowSpeed: Dispatch<number>;
     opacity: number;
-    setOpacity: Dispatch<SetStateAction<number>>;
+    setOpacity: Dispatch<number>;
+    reset: () => void;
 };
 
-const contextDefaults: ControlsContext = {
-    open: true,
-    setOpen: () => {},
-    theme: "original",
-    setTheme: () => {},
-    color: new Color("#fff"),
-    setColor: () => {},
-    resolution: 128,
-    setResolution: () => {},
-    length: 1.0,
-    setLength: () => {},
-    flowSpeed: 1.0,
-    setFlowSpeed: () => {},
-    opacity: 0.5,
-    setOpacity: () => {},
+type ControlsState = {
+    open: boolean;
+    theme: Theme;
+    color: Color;
+    resolution: number;
+    length: number;
+    flowSpeed: number;
+    opacity: number;
 };
+
+type ControlsAction =
+    | { type: "SET_OPEN"; payload: boolean }
+    | { type: "SET_THEME"; payload: Theme }
+    | { type: "SET_COLOR"; payload: Color }
+    | { type: "SET_RESOLUTION"; payload: number }
+    | { type: "SET_LENGTH"; payload: number }
+    | { type: "SET_FLOW_SPEED"; payload: number }
+    | { type: "SET_OPACITY"; payload: number }
+    | { type: "RESET" };
+
+const initialState = {
+    open: true,
+    theme: "original" as Theme,
+    color: new Color("#fff"),
+    resolution: 128,
+    length: 1.0,
+    flowSpeed: 1.0,
+    opacity: 0.5,
+};
+
+function controlsReducer(
+    state: ControlsState,
+    action: ControlsAction,
+): ControlsState {
+    switch (action.type) {
+        case "SET_OPEN":
+            return { ...state, open: action.payload };
+        case "SET_THEME":
+            return { ...state, theme: action.payload };
+        case "SET_COLOR":
+            return { ...state, color: action.payload };
+        case "SET_RESOLUTION":
+            return { ...state, resolution: action.payload };
+        case "SET_LENGTH":
+            return { ...state, length: action.payload };
+        case "SET_FLOW_SPEED":
+            return { ...state, flowSpeed: action.payload };
+        case "SET_OPACITY":
+            return { ...state, opacity: action.payload };
+        case "RESET":
+            return initialState;
+        default:
+            return state;
+    }
+}
 
 const context = createContext<ControlsContext | null>(null);
 
@@ -64,17 +104,61 @@ function useControls() {
 }
 
 export function ControlsProvider({ children }: { children: React.ReactNode }) {
-    const [open, setOpen] = useState<boolean>(contextDefaults.open);
-    const [theme, setTheme] = useState<Theme>(contextDefaults.theme);
-    const [color, setColor] = useState<Color>(contextDefaults.color);
-    const [resolution, setResolution] = useState<number>(
-        contextDefaults.resolution,
-    );
-    const [length, setLength] = useState<number>(contextDefaults.length);
-    const [flowSpeed, setFlowSpeed] = useState<number>(
-        contextDefaults.flowSpeed,
-    );
-    const [opacity, setOpacity] = useState<number>(contextDefaults.opacity);
+    const [
+        { open, theme, color, resolution, length, flowSpeed, opacity },
+        dispatch,
+    ] = useReducer(controlsReducer, initialState);
+
+    const setOpen: Dispatch<boolean> = (value: boolean) => {
+        dispatch({
+            type: "SET_OPEN",
+            payload: value,
+        });
+    };
+
+    const setTheme: Dispatch<Theme> = (value: Theme) => {
+        dispatch({
+            type: "SET_THEME",
+            payload: value,
+        });
+    };
+
+    const setColor: Dispatch<Color> = (value: Color) => {
+        dispatch({
+            type: "SET_COLOR",
+            payload: value,
+        });
+    };
+
+    const setResolution: Dispatch<number> = (value: number) => {
+        dispatch({
+            type: "SET_RESOLUTION",
+            payload: value,
+        });
+    };
+
+    const setLength: Dispatch<number> = (value: number) => {
+        dispatch({
+            type: "SET_LENGTH",
+            payload: value,
+        });
+    };
+
+    const setFlowSpeed: Dispatch<number> = (value: number) => {
+        dispatch({
+            type: "SET_FLOW_SPEED",
+            payload: value,
+        });
+    };
+
+    const setOpacity: Dispatch<number> = (value: number) => {
+        dispatch({
+            type: "SET_OPACITY",
+            payload: value,
+        });
+    };
+
+    const reset = () => dispatch({ type: "RESET" });
 
     return (
         <context.Provider
@@ -93,6 +177,7 @@ export function ControlsProvider({ children }: { children: React.ReactNode }) {
                 setFlowSpeed,
                 opacity,
                 setOpacity,
+                reset,
             }}
         >
             {children}

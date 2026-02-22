@@ -15,7 +15,7 @@ function RightPanel() {
                         <Button
                             size="3"
                             variant="soft"
-                            onClick={() => setOpen((state) => !state)}
+                            onClick={() => setOpen(!open)}
                         >
                             {`${open ? "Hide" : "Show"} Controls`}
                         </Button>
