@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    base: "/playstation-3-xmb/",
+    base: "/PlayStation-3-XMB/",
     plugins: [react(), glsl(), tailwindcss()],
     build: {
         chunkSizeWarningLimit: 3000,
