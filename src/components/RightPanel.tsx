@@ -6,7 +6,9 @@ function RightPanel() {
     const { open, setOpen } = useControls();
 
     return (
-        <div className={`overflow-scroll absolute right-5 top-5 w-100 `}>
+        <div
+            className="absolute top-3 left-3 right-3 sm:top-5 sm:left-auto sm:right-5 sm:w-100 max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-2.5rem)] overflow-y-auto overflow-x-hidden"
+        >
             <Card>
                 <Flex direction="column" gap="5">
                     {open && <Controls />}

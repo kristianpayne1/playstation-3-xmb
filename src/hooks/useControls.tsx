@@ -1,5 +1,5 @@
 import { useContext, createContext, useReducer } from "react";
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch } from "react";
 import { Color } from "three";
 
 export type Theme =
@@ -55,15 +55,20 @@ type ControlsAction =
     | { type: "SET_OPACITY"; payload: number }
     | { type: "RESET" };
 
-const initialState = {
-    open: true,
-    theme: "original" as Theme,
+const getDefaultOpen = () =>
+    typeof window === "undefined"
+        ? true
+        : !window.matchMedia("(max-width: 639px)").matches;
+
+const createInitialState = (): ControlsState => ({
+    open: getDefaultOpen(),
+    theme: "original",
     color: new Color("#fff"),
     resolution: 128,
     length: 1.0,
     flowSpeed: 1.0,
     opacity: 0.5,
-};
+});
 
 function controlsReducer(
     state: ControlsState,
@@ -85,7 +90,7 @@ function controlsReducer(
         case "SET_OPACITY":
             return { ...state, opacity: action.payload };
         case "RESET":
-            return initialState;
+            return createInitialState();
         default:
             return state;
     }
@@ -107,7 +112,7 @@ export function ControlsProvider({ children }: { children: React.ReactNode }) {
     const [
         { open, theme, color, resolution, length, flowSpeed, opacity },
         dispatch,
-    ] = useReducer(controlsReducer, initialState);
+    ] = useReducer(controlsReducer, createInitialState());
 
     const setOpen: Dispatch<boolean> = (value: boolean) => {
         dispatch({
