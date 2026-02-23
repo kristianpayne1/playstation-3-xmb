@@ -2,7 +2,7 @@
     "name": "playstation-3-xmb",
     "private": true,
     "version": "2.0.0",
-    "description": "A faithful recreation of the iconic PlayStation 3 XrossMediaBar (XMB) background wave effects using WebGL. ",
+    "description": "A faithful recreation of the iconic PlayStation 3 XrossMediaBar (XMB)",
     "type": "module",
     "author": "linkev",
     "license": "MIT",
