@@ -2,7 +2,6 @@ import {
     Button,
     DropdownMenu,
     Flex,
-    Heading,
     Separator,
     Slider,
 } from "@radix-ui/themes";
@@ -82,8 +81,6 @@ function Controls() {
         setResolution,
         length,
         setLength,
-        flowSpeed,
-        setFlowSpeed,
         brightness,
         setBrightness,
         opacity,

@@ -29,6 +29,7 @@
     "dependencies": {
         "@radix-ui/themes": "^3.3.0",
         "@react-spring/three": "^10.0.1",
+        "@react-spring/web": "^10.0.3",
         "@react-three/drei": "^10.6.1",
         "@react-three/fiber": "^9.3.0",
         "@types/three": "^0.179.0",

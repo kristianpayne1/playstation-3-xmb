@@ -1,4 +1,4 @@
-import { useContext, createContext, useReducer } from "react";
+import { useCallback, useContext, createContext, useReducer } from "react";
 import type { Dispatch } from "react";
 import { Color } from "three";
 
@@ -28,8 +28,6 @@ export type ControlsContext = {
     setResolution: Dispatch<number>;
     length: number;
     setLength: Dispatch<number>;
-    flowSpeed: number;
-    setFlowSpeed: Dispatch<number>;
     brightness: number;
     setBrightness: Dispatch<number>;
     opacity: number;
@@ -43,7 +41,6 @@ type ControlsState = {
     color: Color;
     resolution: number;
     length: number;
-    flowSpeed: number;
     brightness: number;
     opacity: number;
 };
@@ -70,7 +67,6 @@ const createInitialState = (): ControlsState => ({
     color: new Color("#fff"),
     resolution: 128,
     length: 1.0,
-    flowSpeed: 1.0,
     brightness: 1.0,
     opacity: 0.5,
 });
@@ -90,8 +86,6 @@ function controlsReducer(
             return { ...state, resolution: action.payload };
         case "SET_LENGTH":
             return { ...state, length: action.payload };
-        case "SET_FLOW_SPEED":
-            return { ...state, flowSpeed: action.payload };
         case "SET_BRIGHTNESS":
             return { ...state, brightness: action.payload };
         case "SET_OPACITY":
@@ -117,7 +111,7 @@ function useControls() {
 
 export function ControlsProvider({ children }: { children: React.ReactNode }) {
     const [
-        { open, theme, color, resolution, length, flowSpeed, brightness, opacity },
+        { open, theme, color, resolution, length, brightness, opacity },
         dispatch,
     ] = useReducer(controlsReducer, createInitialState());
 
@@ -156,26 +150,19 @@ export function ControlsProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const setFlowSpeed: Dispatch<number> = (value: number) => {
-        dispatch({
-            type: "SET_FLOW_SPEED",
-            payload: value,
-        });
-    };
-
-    const setBrightness: Dispatch<number> = (value: number) => {
+    const setBrightness: Dispatch<number> = useCallback((value: number) => {
         dispatch({
             type: "SET_BRIGHTNESS",
             payload: value,
         });
-    };
+    }, []);
 
-    const setOpacity: Dispatch<number> = (value: number) => {
+    const setOpacity: Dispatch<number> = useCallback((value: number) => {
         dispatch({
             type: "SET_OPACITY",
             payload: value,
         });
-    };
+    }, []);
 
     const reset = () => dispatch({ type: "RESET" });
 
@@ -192,8 +179,6 @@ export function ControlsProvider({ children }: { children: React.ReactNode }) {
                 setResolution,
                 length,
                 setLength,
-                flowSpeed,
-                setFlowSpeed,
                 brightness,
                 setBrightness,
                 opacity,

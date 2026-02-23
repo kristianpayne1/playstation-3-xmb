@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { easings, useSpring } from "@react-spring/web";
 import { Canvas } from "@react-three/fiber";
 import Wave from "./components/Wave";
 import RightPanel from "./components/RightPanel";
@@ -6,18 +7,38 @@ import useControls from "./hooks/useControls";
 import Camera from "./components/Camera";
 
 function App() {
-    const { theme, color, resolution, length, brightness, opacity } = useControls();
+    const {
+        theme,
+        color,
+        resolution,
+        length,
+        brightness,
+        opacity,
+        setBrightness,
+        setOpacity,
+    } = useControls();
+    const [, api] = useSpring(() => ({
+        from: { brightness: 0.0, opacity: 0.0 },
+    }));
 
     useEffect(() => {
         document.documentElement.style.setProperty(
             "--xmb-brightness",
             brightness.toString(),
         );
-
-        return () => {
-            document.documentElement.style.removeProperty("--xmb-brightness");
-        };
     }, [brightness]);
+
+    useEffect(() => {
+        api.start({
+            from: { brightness: 0.0, opacity: 0.0 },
+            to: { brightness: 1.0, opacity: 0.5 },
+            config: { duration: 5000, easing: easings.easeInOutSine },
+            onChange: ({ value }) => {
+                setBrightness(value.brightness);
+                setOpacity(value.opacity);
+            },
+        });
+    }, [api, setBrightness, setOpacity]);
 
     return (
         <>
