@@ -1,6 +1,6 @@
 import { useRef, type ComponentProps } from "react";
-import { extend, useFrame } from "@react-three/fiber";
-import { Color, DoubleSide, Material } from "three";
+import { extend, useFrame, useThree } from "@react-three/fiber";
+import { Color, DoubleSide, Material, OrthographicCamera } from "three";
 import FlowMaterial from "../materials/FlowMaterial";
 
 extend({ FlowMaterial });
@@ -26,6 +26,12 @@ export default function Wave({
     ...meshProps
 }: WaveProps) {
     const materialRef = useRef<FlowUniformMaterial | null>(null);
+    const { camera, viewport } = useThree();
+    const viewportWidth =
+        camera instanceof OrthographicCamera
+            ? (camera.right - camera.left) / camera.zoom
+            : viewport.width;
+    const waveLength = (viewportWidth / 2) * length;
 
     useFrame((_, deltaTime) => {
         const material = materialRef.current;
@@ -35,7 +41,7 @@ export default function Wave({
     });
 
     return (
-        <mesh {...meshProps} scale={[length, 1, 1]}>
+        <mesh {...meshProps} scale={[waveLength, 1, 1]}>
             <planeGeometry args={[2, 2, resolution, resolution]} />
             <flowMaterial
                 ref={materialRef}
