@@ -1,4 +1,11 @@
-import { Button, DropdownMenu, Flex, Heading, Slider } from "@radix-ui/themes";
+import {
+    Button,
+    DropdownMenu,
+    Flex,
+    Heading,
+    Separator,
+    Slider,
+} from "@radix-ui/themes";
 import useControls from "../hooks/useControls";
 import type { Theme } from "../hooks/useControls";
 import ColorPicker from "./ColorPicker";
@@ -77,6 +84,8 @@ function Controls() {
         setLength,
         flowSpeed,
         setFlowSpeed,
+        brightness,
+        setBrightness,
         opacity,
         setOpacity,
         reset,
@@ -84,9 +93,6 @@ function Controls() {
 
     return (
         <Flex direction="column" gap="5">
-            <Heading as="h2" size="4" align="center">
-                Configuration
-            </Heading>
             <Control label="Theme">
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
@@ -110,7 +116,16 @@ function Controls() {
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>
             </Control>
-            <Control label="Wave Color">
+            <SliderControl
+                label="Brightness"
+                value={brightness}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={setBrightness}
+            />
+            <Separator size="4" />
+            <Control label="Color">
                 <ColorPicker
                     color={color.getHexString()}
                     onChange={(color) => setColor(new Color(color))}
