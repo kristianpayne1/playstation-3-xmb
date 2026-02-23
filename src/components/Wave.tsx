@@ -31,7 +31,7 @@ export default function Wave({
         camera instanceof OrthographicCamera
             ? (camera.right - camera.left) / camera.zoom
             : viewport.width;
-    const waveLength = (viewportWidth / 2) * length;
+    const waveLength = Math.max(viewportWidth / 2, 1) * length;
 
     useFrame((_, deltaTime) => {
         const material = materialRef.current;
