@@ -9,8 +9,6 @@ import useControls from "../hooks/useControls";
 import type { Theme } from "../hooks/useControls";
 import ColorPicker from "./ColorPicker";
 import { Color } from "three";
-import { easings, useSpring } from "@react-spring/web";
-import { useCallback } from "react";
 
 const themes: Theme[] = [
     "original",
@@ -73,10 +71,13 @@ function SliderControl({
     );
 }
 
-function Controls() {
+function Controls({
+    onThemeChange,
+}: {
+    onThemeChange: (theme: Theme) => void;
+}) {
     const {
         theme,
-        setTheme,
         color,
         setColor,
         resolution,
@@ -89,25 +90,6 @@ function Controls() {
         setOpacity,
         reset,
     } = useControls();
-
-    const [, api] = useSpring(() => ({
-        from: { brightness: 0.0 },
-    }));
-
-    const onThemeChange = useCallback(
-        (theme: Theme) => {
-            api.start({
-                from: { brightness: brightness },
-                to: [{ brightness: 0.0 }, { brightness: 1.0 }],
-                config: { duration: 2000, easing: easings.easeInOutSine },
-                onChange: ({ value: { brightness } }) => {
-                    if (brightness === 0) setTheme(theme);
-                    setBrightness(brightness);
-                },
-            });
-        },
-        [api, brightness],
-    );
 
     return (
         <Flex direction="column" gap="5">
