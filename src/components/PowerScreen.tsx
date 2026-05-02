@@ -26,7 +26,7 @@ export default function PowerScreen({ onPowerOn }: PowerScreenProps) {
             type="button"
             aria-label="Power on"
             onClick={handlePowerOn}
-            className="fixed inset-0 z-50 flex items-center justify-center gap-5 bg-black cursor-pointer"
+            className="fixed inset-0 z-50 flex items-center justify-center gap-4 bg-black cursor-pointer"
         >
             <span
                 aria-hidden
