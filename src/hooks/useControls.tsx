@@ -67,8 +67,8 @@ const createInitialState = (): ControlsState => ({
     color: new Color("#fff"),
     resolution: 128,
     length: 1.0,
-    brightness: 1.0,
-    opacity: 0.5,
+    brightness: 0,
+    opacity: 0,
 });
 
 function controlsReducer(
