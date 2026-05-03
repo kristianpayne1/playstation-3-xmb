@@ -9,6 +9,14 @@
     font-display: block;
 }
 
+@font-face {
+    font-family: "PsBold";
+    src: url("/fonts/PsBold.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+    font-display: block;
+}
+
 html,
 body,
 #root {
@@ -24,16 +32,6 @@ canvas {
     font-family: "Rodin", sans-serif;
 }
 
-@keyframes power-pulse {
-    0%,
-    100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.45;
-    }
-}
-
-.animate-power-pulse {
-    animation: power-pulse 2.4s ease-in-out infinite;
+.font-ps {
+    font-family: "PsBold", sans-serif;
 }

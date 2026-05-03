@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { easings, useSpring } from "@react-spring/web";
 import { Canvas } from "@react-three/fiber";
 import Wave from "./components/Wave";
 import useControls from "./hooks/useControls";
 import Camera from "./components/Camera";
 import PowerScreen from "./components/PowerScreen";
+import SplashScreen from "./components/SplashScreen";
 
 function App() {
     const {
@@ -18,6 +19,10 @@ function App() {
         setOpacity,
     } = useControls();
     const [powered, setPowered] = useState(false);
+    const [splashing, setSplashing] = useState(false);
+    const [blurred, setBlurred] = useState(false);
+    const handleSplashFadeOutStart = useCallback(() => setBlurred(false), []);
+    const handleSplashComplete = useCallback(() => setSplashing(false), []);
     const orchestraRef = useRef<HTMLAudioElement | null>(null);
     const [, api] = useSpring(() => ({
         from: { brightness: 0.0, opacity: 0.0 },
@@ -32,6 +37,8 @@ function App() {
 
     useEffect(() => {
         if (!powered) return;
+        setSplashing(true);
+        setBlurred(true);
         if (orchestraRef.current) {
             orchestraRef.current.volume = 0.5;
             orchestraRef.current
@@ -51,13 +58,25 @@ function App() {
 
     return (
         <>
-            <main className="h-screen">
+            <main
+                className="h-screen transition-[filter] ease-out"
+                style={{
+                    filter: blurred ? "blur(4px)" : "none",
+                    transitionDuration: "500ms",
+                }}
+            >
                 <Canvas className={`xmb-theme-bg-${theme}`}>
                     <Camera />
                     <Wave {...{ color, resolution, length, opacity }} />
                 </Canvas>
             </main>
             {!powered && <PowerScreen onPowerOn={() => setPowered(true)} />}
+            {splashing && (
+                <SplashScreen
+                    onFadeOutStart={handleSplashFadeOutStart}
+                    onComplete={handleSplashComplete}
+                />
+            )}
             <audio
                 ref={orchestraRef}
                 src={`${import.meta.env.BASE_URL}sounds/orchestra-tuning.mp3`}
