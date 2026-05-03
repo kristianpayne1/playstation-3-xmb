@@ -6,6 +6,7 @@ import useControls from "./hooks/useControls";
 import Camera from "./components/Camera";
 import PowerScreen from "./components/PowerScreen";
 import SplashScreen from "./components/SplashScreen";
+import Xmb from "./components/Xmb";
 
 function App() {
     const {
@@ -77,6 +78,7 @@ function App() {
                     onComplete={handleSplashComplete}
                 />
             )}
+            {powered && !splashing && <Xmb />}
             <audio
                 ref={orchestraRef}
                 src={`${import.meta.env.BASE_URL}sounds/orchestra-tuning.mp3`}
