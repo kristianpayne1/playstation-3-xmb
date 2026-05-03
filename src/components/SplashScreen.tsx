@@ -80,7 +80,7 @@ export default function SplashScreen({
                 <span className="font-ps text-[96px] leading-none tracking-tight">
                     PS3
                 </span>
-                <span className="col-start-2 mt-1 justify-self-center whitespace-nowrap font-rodin text-[11px] tracking-[0.2em] opacity-90">
+                <span className="font-rodin col-start-2 mt-1 justify-self-center whitespace-nowrap font-rodin text-[11px] tracking-[0.2em] opacity-90">
                     PlayStation 3
                 </span>
             </animated.div>

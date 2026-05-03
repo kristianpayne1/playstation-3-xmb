@@ -26,32 +26,34 @@ export default function PowerScreen({ onPowerOn }: PowerScreenProps) {
             type="button"
             aria-label="Power on"
             onClick={handlePowerOn}
-            className="fixed inset-0 z-50 flex items-center justify-center gap-4 bg-black cursor-pointer"
+            className="fixed inset-0 flex items-center justify-center cursor-pointer"
         >
-            <span
-                aria-hidden
-                className={`block w-7 h-7 bg-white`}
-                style={{
-                    WebkitMaskImage: `url("${import.meta.env.BASE_URL}icons/power.svg")`,
-                    maskImage: `url("${import.meta.env.BASE_URL}icons/power.svg")`,
-                    WebkitMaskRepeat: "no-repeat",
-                    maskRepeat: "no-repeat",
-                    WebkitMaskPosition: "center",
-                    maskPosition: "center",
-                    WebkitMaskSize: "contain",
-                    maskSize: "contain",
-                }}
-            />
-            <span
-                aria-hidden
-                className="block w-0.75 h-6 rounded-xs"
-                style={{
-                    backgroundColor: isOn ? "#3aff5a" : "#ff2a2a",
-                    boxShadow: isOn
-                        ? "0 0 8px 1px rgba(58, 255, 90, 0.85)"
-                        : "0 0 8px 1px rgba(255, 42, 42, 0.85)",
-                }}
-            />
+            <div className="flex items-center gap-4">
+                <span
+                    aria-hidden
+                    className={`block w-7 h-7 bg-gray-300`}
+                    style={{
+                        WebkitMaskImage: `url("${import.meta.env.BASE_URL}icons/power.svg")`,
+                        maskImage: `url("${import.meta.env.BASE_URL}icons/power.svg")`,
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                    }}
+                />
+                <span
+                    aria-hidden
+                    className="block w-0.75 h-6 rounded-xs"
+                    style={{
+                        backgroundColor: isOn ? "#3aff5a" : "#ff2a2a",
+                        boxShadow: isOn
+                            ? "0 0 8px 1px rgba(58, 255, 90, 0.85)"
+                            : "0 0 8px 1px rgba(255, 42, 42, 0.85)",
+                    }}
+                />
+            </div>
             <audio
                 ref={beepRef}
                 src={`${import.meta.env.BASE_URL}sounds/power-beep.mp3`}
