@@ -1,4 +1,4 @@
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { animated, easings, useSpring } from "@react-spring/web";
 import { XMB_MENU } from "../lib/xmbMenu";
 import XmbIcon from "./XmbIcon";
@@ -76,29 +76,130 @@ export default function Xmb() {
         config: SPRING_CONFIG,
     });
 
+    const categoryIndexRef = useRef(categoryIndex);
+    const itemIndexRef = useRef(itemIndex);
+    categoryIndexRef.current = categoryIndex;
+    itemIndexRef.current = itemIndex;
+
+    const wheelStepX = L.categorySpacing;
+    const wheelStepY = L.itemSpacing;
+
     useEffect(() => {
+        const clamp = (v: number, lo: number, hi: number) =>
+            Math.max(lo, Math.min(hi, v));
+
+        const setCategory = (target: number) => {
+            setCategoryIndex((cur) => {
+                const next = clamp(target, 0, categoryCount - 1);
+                if (next !== cur) setItemIndex(0);
+                return next;
+            });
+        };
+        const setItem = (target: number) => {
+            setItemIndex((cur) => {
+                const next = clamp(target, 0, itemCount - 1);
+                return next === cur ? cur : next;
+            });
+        };
+        const stepCategory = (delta: number) =>
+            setCategory(categoryIndexRef.current + delta);
+        const stepItem = (delta: number) =>
+            setItem(itemIndexRef.current + delta);
+
         const onKey = (e: KeyboardEvent) => {
-            if (e.key === "ArrowLeft") {
-                setCategoryIndex((i) => {
-                    const next = Math.max(0, i - 1);
-                    if (next !== i) setItemIndex(0);
-                    return next;
-                });
-            } else if (e.key === "ArrowRight") {
-                setCategoryIndex((i) => {
-                    const next = Math.min(categoryCount - 1, i + 1);
-                    if (next !== i) setItemIndex(0);
-                    return next;
-                });
-            } else if (e.key === "ArrowUp") {
-                setItemIndex((i) => Math.max(0, i - 1));
-            } else if (e.key === "ArrowDown") {
-                setItemIndex((i) => Math.min(itemCount - 1, i + 1));
+            if (e.key === "ArrowLeft") stepCategory(-1);
+            else if (e.key === "ArrowRight") stepCategory(1);
+            else if (e.key === "ArrowUp") stepItem(-1);
+            else if (e.key === "ArrowDown") stepItem(1);
+        };
+
+        const wheelAccum = { x: 0, y: 0 };
+        let wheelResetTimer: number | null = null;
+        const onWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            wheelAccum.x += e.deltaX;
+            wheelAccum.y += e.deltaY;
+            const ax = Math.abs(wheelAccum.x);
+            const ay = Math.abs(wheelAccum.y);
+            if (ax >= ay) {
+                const steps = Math.trunc(wheelAccum.x / wheelStepX);
+                if (steps !== 0) {
+                    stepCategory(steps);
+                    wheelAccum.x -= steps * wheelStepX;
+                    wheelAccum.y = 0;
+                }
+            } else {
+                const steps = Math.trunc(wheelAccum.y / wheelStepY);
+                if (steps !== 0) {
+                    stepItem(steps);
+                    wheelAccum.y -= steps * wheelStepY;
+                    wheelAccum.x = 0;
+                }
+            }
+            if (wheelResetTimer !== null) window.clearTimeout(wheelResetTimer);
+            wheelResetTimer = window.setTimeout(() => {
+                wheelAccum.x = 0;
+                wheelAccum.y = 0;
+            }, 200);
+        };
+
+        const AXIS_LOCK_PX = 10;
+        const swipeStepX = wheelStepX;
+        const swipeStepY = wheelStepY;
+        let touchStart: { x: number; y: number } | null = null;
+        let touchAxis: "x" | "y" | null = null;
+        let startC = 0;
+        let startI = 0;
+        const onTouchStart = (e: TouchEvent) => {
+            const t = e.touches[0];
+            if (!t) return;
+            touchStart = { x: t.clientX, y: t.clientY };
+            touchAxis = null;
+            startC = categoryIndexRef.current;
+            startI = itemIndexRef.current;
+        };
+        const onTouchMove = (e: TouchEvent) => {
+            if (!touchStart) return;
+            const t = e.touches[0];
+            if (!t) return;
+            const dx = t.clientX - touchStart.x;
+            const dy = t.clientY - touchStart.y;
+            if (touchAxis === null) {
+                const ax = Math.abs(dx);
+                const ay = Math.abs(dy);
+                if (ax < AXIS_LOCK_PX && ay < AXIS_LOCK_PX) return;
+                touchAxis = ax > ay ? "x" : "y";
+            }
+            e.preventDefault();
+            if (touchAxis === "x") {
+                const delta = Math.trunc(-dx / swipeStepX);
+                setCategory(startC + delta);
+            } else {
+                const delta = Math.trunc(-dy / swipeStepY);
+                setItem(startI + delta);
             }
         };
+        const onTouchEnd = () => {
+            touchStart = null;
+            touchAxis = null;
+        };
+
         window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-    }, [categoryCount, itemCount]);
+        window.addEventListener("wheel", onWheel, { passive: false });
+        window.addEventListener("touchstart", onTouchStart, { passive: true });
+        window.addEventListener("touchmove", onTouchMove, { passive: false });
+        window.addEventListener("touchend", onTouchEnd, { passive: true });
+        window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+        return () => {
+            window.removeEventListener("keydown", onKey);
+            window.removeEventListener("wheel", onWheel);
+            window.removeEventListener("touchstart", onTouchStart);
+            window.removeEventListener("touchmove", onTouchMove);
+            window.removeEventListener("touchend", onTouchEnd);
+            window.removeEventListener("touchcancel", onTouchEnd);
+            if (wheelResetTimer !== null) window.clearTimeout(wheelResetTimer);
+        };
+    }, [categoryCount, itemCount, wheelStepX, wheelStepY]);
 
     return (
         <div className="fixed inset-0 z-30 pointer-events-none text-white font-rodin select-none overflow-hidden">
