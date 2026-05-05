@@ -4,16 +4,18 @@ import { XMB_MENU } from "../lib/xmbMenu";
 import XmbIcon from "./XmbIcon";
 
 const CATEGORY_SPACING = 160;
-const ITEM_SPACING = 60;
+const ITEM_SPACING = 56;
 const CATEGORY_ICON_SIZE = 64;
 const ITEM_ICON_SIZE = 36;
 const ACTIVE_ITEM_ICON_SIZE = 44;
-const ITEM_OFFSET_Y = 90;
+const ITEM_OFFSET_Y = 100;
+const ABOVE_BAR_GAP = 2 * ITEM_OFFSET_Y - ITEM_SPACING;
 
 const ANCHOR_LEFT_VW = 26;
 const ANCHOR_TOP_VH = 38;
 
 const SPRING_CONFIG = { duration: 220, easing: easings.easeOutSine };
+const ITEM_TRANSITION = "transform 220ms ease-out, opacity 220ms ease-out";
 
 export default function Xmb() {
     const [categoryIndex, setCategoryIndex] = useState(1);
@@ -25,11 +27,6 @@ export default function Xmb() {
 
     const horizontal = useSpring({
         x: -categoryIndex * CATEGORY_SPACING,
-        config: SPRING_CONFIG,
-    });
-
-    const vertical = useSpring({
-        y: -itemIndex * ITEM_SPACING,
         config: SPRING_CONFIG,
     });
 
@@ -90,8 +87,7 @@ export default function Xmb() {
                                     animation: active
                                         ? "xmb-pulse 1.6s ease-in-out infinite"
                                         : "none",
-                                    textShadow:
-                                        "0 1px 2px rgba(0,0,0,0.55)",
+                                    textShadow: "0 1px 2px rgba(0,0,0,0.55)",
                                 }}
                             >
                                 {cat.label}
@@ -101,12 +97,11 @@ export default function Xmb() {
                 })}
             </animated.div>
 
-            <animated.div
+            <div
                 className="absolute"
                 style={{
                     left: `${ANCHOR_LEFT_VW}vw`,
                     top: `calc(${ANCHOR_TOP_VH}vh + ${ITEM_OFFSET_Y}px)`,
-                    transform: vertical.y.to((y) => `translateY(${y}px)`),
                 }}
             >
                 {activeCategory.items.map((item, i) => {
@@ -118,17 +113,18 @@ export default function Xmb() {
                     const iconSize = active
                         ? ACTIVE_ITEM_ICON_SIZE
                         : ITEM_ICON_SIZE;
+                    const baseY = (i - itemIndex) * ITEM_SPACING;
+                    const y = i < itemIndex ? baseY - ABOVE_BAR_GAP : baseY;
                     return (
                         <div
                             key={item.id}
                             className="absolute flex items-center gap-5"
                             style={{
-                                top: i * ITEM_SPACING,
+                                top: 0,
                                 left: 0,
-                                transform: `translate(-${ACTIVE_ITEM_ICON_SIZE / 2}px, -50%)`,
+                                transform: `translate(-${ACTIVE_ITEM_ICON_SIZE / 2}px, calc(-50% + ${y}px))`,
                                 opacity: fade,
-                                transition:
-                                    "opacity 200ms ease, transform 200ms ease",
+                                transition: ITEM_TRANSITION,
                             }}
                         >
                             <div
@@ -168,7 +164,7 @@ export default function Xmb() {
                         </div>
                     );
                 })}
-            </animated.div>
+            </div>
         </div>
     );
 }
