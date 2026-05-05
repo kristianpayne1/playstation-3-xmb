@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+    useSyncExternalStore,
+} from "react";
 import { animated, easings, useSpring } from "@react-spring/web";
 import { XMB_MENU } from "../lib/xmbMenu";
 import XmbIcon from "./XmbIcon";
@@ -71,10 +77,20 @@ export default function Xmb() {
     const activeCategory = XMB_MENU[categoryIndex];
     const itemCount = activeCategory.items.length;
 
+    const [itemsHidden, setItemsHidden] = useState(false);
+    const hasMountedRef = useRef(false);
     const horizontal = useSpring({
         x: -categoryIndex * L.categorySpacing,
         config: SPRING_CONFIG,
+        onRest: () => {
+            hasMountedRef.current = true;
+            setItemsHidden(false);
+        },
     });
+
+    useLayoutEffect(() => {
+        if (hasMountedRef.current) setItemsHidden(true);
+    }, [categoryIndex]);
 
     const categoryIndexRef = useRef(categoryIndex);
     const itemIndexRef = useRef(itemIndex);
@@ -259,6 +275,8 @@ export default function Xmb() {
                 style={{
                     left: `${L.anchorLeftVw}vw`,
                     top: `calc(${L.anchorTopVh}vh + ${L.itemOffsetY}px)`,
+                    opacity: itemsHidden ? 0 : 1,
+                    transition: itemsHidden ? "none" : "opacity 200ms ease",
                 }}
             >
                 {activeCategory.items.map((item, i) => {
