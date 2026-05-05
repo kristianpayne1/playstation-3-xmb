@@ -70,10 +70,19 @@ export default function Xmb() {
                 {XMB_MENU.map((cat, i) => {
                     const active = i === categoryIndex;
                     return (
-                        <div
+                        <button
                             key={cat.id}
-                            className="flex flex-col items-center"
+                            type="button"
+                            onClick={() => {
+                                if (i !== categoryIndex) {
+                                    setCategoryIndex(i);
+                                    setItemIndex(0);
+                                }
+                            }}
+                            className="flex flex-col items-center pointer-events-auto cursor-pointer bg-transparent border-0 p-0"
                             style={{ width: CATEGORY_SPACING }}
+                            aria-label={cat.label}
+                            aria-current={active ? "true" : undefined}
                         >
                             <XmbIcon
                                 icon={cat.icon}
@@ -92,7 +101,7 @@ export default function Xmb() {
                             >
                                 {cat.label}
                             </span>
-                        </div>
+                        </button>
                     );
                 })}
             </animated.div>
@@ -116,9 +125,15 @@ export default function Xmb() {
                     const baseY = (i - itemIndex) * ITEM_SPACING;
                     const y = i < itemIndex ? baseY - ABOVE_BAR_GAP : baseY;
                     return (
-                        <div
+                        <button
                             key={item.id}
-                            className="absolute flex items-center gap-5"
+                            type="button"
+                            onClick={() => {
+                                if (i !== itemIndex) setItemIndex(i);
+                            }}
+                            aria-label={item.label}
+                            aria-current={active ? "true" : undefined}
+                            className="absolute flex items-center gap-5 pointer-events-auto cursor-pointer bg-transparent border-0 p-0 text-left"
                             style={{
                                 top: 0,
                                 left: 0,
@@ -161,7 +176,7 @@ export default function Xmb() {
                                     </span>
                                 )}
                             </div>
-                        </div>
+                        </button>
                     );
                 })}
             </div>
