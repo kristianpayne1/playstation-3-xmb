@@ -1,23 +1,69 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { animated, easings, useSpring } from "@react-spring/web";
 import { XMB_MENU } from "../lib/xmbMenu";
 import XmbIcon from "./XmbIcon";
 
-const CATEGORY_SPACING = 160;
-const ITEM_SPACING = 56;
-const CATEGORY_ICON_SIZE = 64;
-const ITEM_ICON_SIZE = 36;
-const ACTIVE_ITEM_ICON_SIZE = 44;
-const ITEM_OFFSET_Y = 100;
-const ABOVE_BAR_GAP = 2 * ITEM_OFFSET_Y - ITEM_SPACING;
+const COMPACT_BREAKPOINT_W = 640;
+const COMPACT_BREAKPOINT_H = 500;
 
-const ANCHOR_LEFT_VW = 26;
-const ANCHOR_TOP_VH = 38;
+const LAYOUTS = {
+    desktop: {
+        categorySpacing: 160,
+        itemSpacing: 56,
+        categoryIconSize: 64,
+        itemIconSize: 36,
+        activeItemIconSize: 44,
+        itemOffsetY: 100,
+        itemGap: 20,
+        anchorLeftVw: 26,
+        anchorTopVh: 38,
+        categoryLabelPx: 13,
+        activeItemLabelPx: 22,
+        itemLabelPx: 16,
+        descriptionPx: 12,
+    },
+    mobile: {
+        categorySpacing: 86,
+        itemSpacing: 46,
+        categoryIconSize: 40,
+        itemIconSize: 26,
+        activeItemIconSize: 32,
+        itemOffsetY: 70,
+        itemGap: 12,
+        anchorLeftVw: 18,
+        anchorTopVh: 34,
+        categoryLabelPx: 11,
+        activeItemLabelPx: 17,
+        itemLabelPx: 13,
+        descriptionPx: 11,
+    },
+} as const;
 
 const SPRING_CONFIG = { duration: 220, easing: easings.easeOutSine };
 const ITEM_TRANSITION = "transform 220ms ease-out, opacity 220ms ease-out";
 
+const subscribeToResize = (cb: () => void) => {
+    window.addEventListener("resize", cb);
+    return () => window.removeEventListener("resize", cb);
+};
+const getIsCompact = () =>
+    window.innerWidth < COMPACT_BREAKPOINT_W ||
+    window.innerHeight < COMPACT_BREAKPOINT_H;
+const getServerCompact = () => false;
+
+function useIsCompact() {
+    return useSyncExternalStore(
+        subscribeToResize,
+        getIsCompact,
+        getServerCompact,
+    );
+}
+
 export default function Xmb() {
+    const isCompact = useIsCompact();
+    const L = isCompact ? LAYOUTS.mobile : LAYOUTS.desktop;
+    const aboveBarGap = 2 * L.itemOffsetY - L.itemSpacing;
+
     const [categoryIndex, setCategoryIndex] = useState(1);
     const [itemIndex, setItemIndex] = useState(4);
 
@@ -26,7 +72,7 @@ export default function Xmb() {
     const itemCount = activeCategory.items.length;
 
     const horizontal = useSpring({
-        x: -categoryIndex * CATEGORY_SPACING,
+        x: -categoryIndex * L.categorySpacing,
         config: SPRING_CONFIG,
     });
 
@@ -59,11 +105,11 @@ export default function Xmb() {
             <animated.div
                 className="absolute flex items-start"
                 style={{
-                    left: `${ANCHOR_LEFT_VW}vw`,
-                    top: `${ANCHOR_TOP_VH}vh`,
+                    left: `${L.anchorLeftVw}vw`,
+                    top: `${L.anchorTopVh}vh`,
                     transform: horizontal.x.to(
                         (x) =>
-                            `translate(calc(${x}px - ${CATEGORY_SPACING / 2}px), -50%)`,
+                            `translate(calc(${x}px - ${L.categorySpacing / 2}px), -50%)`,
                     ),
                 }}
             >
@@ -80,18 +126,19 @@ export default function Xmb() {
                                 }
                             }}
                             className="flex flex-col items-center pointer-events-auto cursor-pointer bg-transparent border-0 p-0"
-                            style={{ width: CATEGORY_SPACING }}
+                            style={{ width: L.categorySpacing }}
                             aria-label={cat.label}
                             aria-current={active ? "true" : undefined}
                         >
                             <XmbIcon
                                 icon={cat.icon}
-                                size={CATEGORY_ICON_SIZE}
+                                size={L.categoryIconSize}
                                 active={active}
                             />
                             <span
-                                className="mt-3 text-[13px] tracking-wider whitespace-nowrap"
+                                className="mt-3 tracking-wider whitespace-nowrap"
                                 style={{
+                                    fontSize: L.categoryLabelPx,
                                     opacity: active ? 1 : 0,
                                     animation: active
                                         ? "xmb-pulse 1.6s ease-in-out infinite"
@@ -109,8 +156,8 @@ export default function Xmb() {
             <div
                 className="absolute"
                 style={{
-                    left: `${ANCHOR_LEFT_VW}vw`,
-                    top: `calc(${ANCHOR_TOP_VH}vh + ${ITEM_OFFSET_Y}px)`,
+                    left: `${L.anchorLeftVw}vw`,
+                    top: `calc(${L.anchorTopVh}vh + ${L.itemOffsetY}px)`,
                 }}
             >
                 {activeCategory.items.map((item, i) => {
@@ -120,10 +167,10 @@ export default function Xmb() {
                         ? 1
                         : Math.max(0.35, 0.8 - distance * 0.1);
                     const iconSize = active
-                        ? ACTIVE_ITEM_ICON_SIZE
-                        : ITEM_ICON_SIZE;
-                    const baseY = (i - itemIndex) * ITEM_SPACING;
-                    const y = i < itemIndex ? baseY - ABOVE_BAR_GAP : baseY;
+                        ? L.activeItemIconSize
+                        : L.itemIconSize;
+                    const baseY = (i - itemIndex) * L.itemSpacing;
+                    const y = i < itemIndex ? baseY - aboveBarGap : baseY;
                     return (
                         <button
                             key={item.id}
@@ -133,18 +180,19 @@ export default function Xmb() {
                             }}
                             aria-label={item.label}
                             aria-current={active ? "true" : undefined}
-                            className="absolute flex items-center gap-5 pointer-events-auto cursor-pointer bg-transparent border-0 p-0 text-left"
+                            className="absolute flex items-center pointer-events-auto cursor-pointer bg-transparent border-0 p-0 text-left"
                             style={{
                                 top: 0,
                                 left: 0,
-                                transform: `translate(-${ACTIVE_ITEM_ICON_SIZE / 2}px, calc(-50% + ${y}px))`,
+                                gap: L.itemGap,
+                                transform: `translate(-${L.activeItemIconSize / 2}px, calc(-50% + ${y}px))`,
                                 opacity: fade,
                                 transition: ITEM_TRANSITION,
                             }}
                         >
                             <div
                                 className="flex items-center justify-center shrink-0"
-                                style={{ width: ACTIVE_ITEM_ICON_SIZE }}
+                                style={{ width: L.activeItemIconSize }}
                             >
                                 <XmbIcon
                                     icon={item.icon}
@@ -156,7 +204,9 @@ export default function Xmb() {
                                 <span
                                     className="whitespace-nowrap"
                                     style={{
-                                        fontSize: active ? 22 : 16,
+                                        fontSize: active
+                                            ? L.activeItemLabelPx
+                                            : L.itemLabelPx,
                                         textShadow:
                                             "0 1px 2px rgba(0,0,0,0.55)",
                                         transition: "font-size 200ms ease",
@@ -166,8 +216,9 @@ export default function Xmb() {
                                 </span>
                                 {active && item.description && (
                                     <span
-                                        className="mt-1 text-[12px] opacity-80 whitespace-nowrap"
+                                        className="mt-1 opacity-80 whitespace-nowrap"
                                         style={{
+                                            fontSize: L.descriptionPx,
                                             textShadow:
                                                 "0 1px 2px rgba(0,0,0,0.55)",
                                         }}
