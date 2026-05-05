@@ -1,4 +1,5 @@
 import {
+    useCallback,
     useEffect,
     useLayoutEffect,
     useRef,
@@ -97,6 +98,14 @@ export default function Xmb() {
     categoryIndexRef.current = categoryIndex;
     itemIndexRef.current = itemIndex;
 
+    const tickRef = useRef<HTMLAudioElement | null>(null);
+    const playTick = useCallback(() => {
+        const base = tickRef.current;
+        if (!base) return;
+        const clone = base.cloneNode() as HTMLAudioElement;
+        clone.play().catch(() => {});
+    }, []);
+
     const wheelStepX = L.categorySpacing;
     const wheelStepY = L.itemSpacing;
 
@@ -105,17 +114,19 @@ export default function Xmb() {
             Math.max(lo, Math.min(hi, v));
 
         const setCategory = (target: number) => {
-            setCategoryIndex((cur) => {
-                const next = clamp(target, 0, categoryCount - 1);
-                if (next !== cur) setItemIndex(0);
-                return next;
-            });
+            const cur = categoryIndexRef.current;
+            const next = clamp(target, 0, categoryCount - 1);
+            if (next === cur) return;
+            setCategoryIndex(next);
+            setItemIndex(0);
+            playTick();
         };
         const setItem = (target: number) => {
-            setItemIndex((cur) => {
-                const next = clamp(target, 0, itemCount - 1);
-                return next === cur ? cur : next;
-            });
+            const cur = itemIndexRef.current;
+            const next = clamp(target, 0, itemCount - 1);
+            if (next === cur) return;
+            setItemIndex(next);
+            playTick();
         };
         const stepCategory = (delta: number) =>
             setCategory(categoryIndexRef.current + delta);
@@ -215,7 +226,7 @@ export default function Xmb() {
             window.removeEventListener("touchcancel", onTouchEnd);
             if (wheelResetTimer !== null) window.clearTimeout(wheelResetTimer);
         };
-    }, [categoryCount, itemCount, wheelStepX, wheelStepY]);
+    }, [categoryCount, itemCount, wheelStepX, wheelStepY, playTick]);
 
     return (
         <div className="fixed inset-0 z-30 pointer-events-none text-white font-rodin select-none overflow-hidden">
@@ -240,6 +251,7 @@ export default function Xmb() {
                                 if (i !== categoryIndex) {
                                     setCategoryIndex(i);
                                     setItemIndex(0);
+                                    playTick();
                                 }
                             }}
                             className="flex flex-col items-center pointer-events-auto cursor-pointer bg-transparent border-0 p-0"
@@ -295,7 +307,10 @@ export default function Xmb() {
                             key={item.id}
                             type="button"
                             onClick={() => {
-                                if (i !== itemIndex) setItemIndex(i);
+                                if (i !== itemIndex) {
+                                    setItemIndex(i);
+                                    playTick();
+                                }
                             }}
                             aria-label={item.label}
                             aria-current={active ? "true" : undefined}
@@ -350,6 +365,11 @@ export default function Xmb() {
                     );
                 })}
             </div>
+            <audio
+                ref={tickRef}
+                src={`${import.meta.env.BASE_URL}sounds/menu-tick.mp3`}
+                preload="auto"
+            />
         </div>
     );
 }
