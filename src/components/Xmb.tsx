@@ -71,8 +71,8 @@ export default function Xmb() {
     const L = isCompact ? LAYOUTS.mobile : LAYOUTS.desktop;
     const aboveBarGap = 2 * L.itemOffsetY - L.itemSpacing;
 
-    const [categoryIndex, setCategoryIndex] = useState(1);
-    const [itemIndex, setItemIndex] = useState(4);
+    const [categoryIndex, setCategoryIndex] = useState(0);
+    const [itemIndex, setItemIndex] = useState(2);
 
     const categoryCount = XMB_MENU.length;
     const activeCategory = XMB_MENU[categoryIndex];
@@ -87,6 +87,12 @@ export default function Xmb() {
             hasMountedRef.current = true;
             setItemsHidden(false);
         },
+    });
+
+    const entrance = useSpring({
+        from: { opacity: 0, scale: 1.1 },
+        to: { opacity: 1, scale: 1 },
+        config: { duration: 400, easing: easings.easeOutSine },
     });
 
     useLayoutEffect(() => {
@@ -249,7 +255,13 @@ export default function Xmb() {
     }, [categoryCount, itemCount, wheelStepX, wheelStepY, playTick]);
 
     return (
-        <div className="fixed inset-0 z-30 pointer-events-none text-white font-rodin select-none overflow-hidden">
+        <animated.div
+            className="fixed inset-0 z-30 pointer-events-none text-white font-rodin select-none overflow-hidden"
+            style={{
+                opacity: entrance.opacity,
+                transform: entrance.scale.to((s) => `scale(${s})`),
+            }}
+        >
             <animated.div
                 className="absolute flex items-start"
                 style={{
@@ -385,6 +397,6 @@ export default function Xmb() {
                     );
                 })}
             </div>
-        </div>
+        </animated.div>
     );
 }
