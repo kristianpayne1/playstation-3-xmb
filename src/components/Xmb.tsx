@@ -8,6 +8,7 @@ import useXmbNavigation from "../hooks/useXmbNavigation";
 import useXmbInput from "../hooks/useXmbInput";
 import XmbCategoryBar from "./XmbCategoryBar";
 import XmbItemList from "./XmbItemList";
+import XmbStatusBar from "./XmbStatusBar";
 
 const HORIZONTAL_SPRING = { duration: 220, easing: easings.easeOutSine };
 const ENTRANCE_SPRING = { duration: 400, easing: easings.easeOutSine };
@@ -75,6 +76,7 @@ export default function Xmb() {
                 transform: entrance.scale.to((s) => `scale(${s})`),
             }}
         >
+            <XmbStatusBar layout={layout} />
             <XmbCategoryBar
                 layout={layout}
                 categoryIndex={categoryIndex}

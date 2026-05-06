@@ -13,6 +13,9 @@ export const XMB_LAYOUTS = {
         activeItemLabelPx: 22,
         itemLabelPx: 16,
         descriptionPx: 12,
+        statusTopVh: 4,
+        statusFontPx: 18,
+        statusIconSize: 18,
     },
     mobile: {
         categorySpacing: 86,
@@ -28,6 +31,9 @@ export const XMB_LAYOUTS = {
         activeItemLabelPx: 17,
         itemLabelPx: 13,
         descriptionPx: 11,
+        statusTopVh: 3,
+        statusFontPx: 14,
+        statusIconSize: 14,
     },
 } as const;
 
