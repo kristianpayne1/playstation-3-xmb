@@ -27,7 +27,7 @@ export default function XmbStatusBar({ friendsOnline = 0 }: XmbStatusBarProps) {
     }, []);
 
     return (
-        <div className="absolute w-90 compact:w-50 justify-between -right-1 top-[8vh] compact:top-[5vh] flex items-center gap-4 text-white whitespace-nowrap leading-none border border-white/20 rounded-md text-lg/1 compact:text-sm px-4.5 pr-25 py-2 compact:px-3.5 compact:py-1.75 xmb-shadow">
+        <div className="absolute inset-ring inset-ring-white/10 w-90 compact:w-50 justify-between -right-1 top-[8vh] compact:top-[5vh] flex items-center gap-4 text-white whitespace-nowrap leading-none border border-white/20 rounded-sm text-lg/1 compact:text-sm px-4.5 pr-25 py-2 compact:px-3.5 compact:py-1.75 xmb-shadow">
             <span className="flex items-center gap-1.5">
                 <XmbIcon
                     icon="user.svg"
