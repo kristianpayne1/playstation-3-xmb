@@ -98,12 +98,32 @@ export default function Xmb() {
     categoryIndexRef.current = categoryIndex;
     itemIndexRef.current = itemIndex;
 
-    const tickRef = useRef<HTMLAudioElement | null>(null);
+    const audioCtxRef = useRef<AudioContext | null>(null);
+    const tickBufferRef = useRef<AudioBuffer | null>(null);
+    useEffect(() => {
+        const ctx = new AudioContext();
+        audioCtxRef.current = ctx;
+        const url = `${import.meta.env.BASE_URL}sounds/menu-tick.mp3`;
+        fetch(url)
+            .then((r) => r.arrayBuffer())
+            .then((buf) => ctx.decodeAudioData(buf))
+            .then((audioBuffer) => {
+                tickBufferRef.current = audioBuffer;
+            })
+            .catch((err) => console.error("menu-tick load failed:", err));
+        return () => {
+            ctx.close().catch(() => {});
+        };
+    }, []);
     const playTick = useCallback(() => {
-        const base = tickRef.current;
-        if (!base) return;
-        const clone = base.cloneNode() as HTMLAudioElement;
-        clone.play().catch(() => {});
+        const ctx = audioCtxRef.current;
+        const buffer = tickBufferRef.current;
+        if (!ctx || !buffer) return;
+        if (ctx.state === "suspended") ctx.resume().catch(() => {});
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start(0);
     }, []);
 
     const wheelStepX = L.categorySpacing;
@@ -365,11 +385,6 @@ export default function Xmb() {
                     );
                 })}
             </div>
-            <audio
-                ref={tickRef}
-                src={`${import.meta.env.BASE_URL}sounds/menu-tick.mp3`}
-                preload="auto"
-            />
         </div>
     );
 }
