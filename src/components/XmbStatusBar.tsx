@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import type { XmbLayout } from "../lib/xmbLayouts";
 import XmbIcon from "./XmbIcon";
 
 const formatDateTime = (d: Date) => {
@@ -11,12 +10,10 @@ const formatDateTime = (d: Date) => {
 };
 
 type XmbStatusBarProps = {
-    layout: XmbLayout;
     friendsOnline?: number;
 };
 
 export default function XmbStatusBar({
-    layout: L,
     friendsOnline = 0,
 }: XmbStatusBarProps) {
     const [now, setNow] = useState(() => new Date());
@@ -32,19 +29,12 @@ export default function XmbStatusBar({
     }, []);
 
     return (
-        <div
-            className="absolute flex items-center gap-4 text-white whitespace-nowrap leading-none border border-white/20 rounded-md"
-            style={{
-                top: `${L.statusTopVh}vh`,
-                right: -3,
-                fontSize: L.statusFontPx,
-                padding: `${L.statusFontPx * 0.5}px ${L.statusFontPx}px`,
-                textShadow:
-                    "0 1px 1px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.55)",
-            }}
-        >
+        <div className="absolute -right-0.75 top-[4vh] compact:top-[3vh] flex items-center gap-4 text-white whitespace-nowrap leading-none border border-white/20 rounded-md text-lg compact:text-sm px-4.5 py-2.25 compact:px-3.5 compact:py-1.75 xmb-status-shadow">
             <span className="flex items-center gap-1.5">
-                <XmbIcon icon="user.svg" size={L.statusIconSize} />
+                <XmbIcon
+                    icon="user.svg"
+                    className="w-4.5 h-4.5 compact:w-3.5 compact:h-3.5"
+                />
                 <span>{friendsOnline}</span>
             </span>
             <span>{formatDateTime(now)}</span>

@@ -15,7 +15,7 @@ const ENTRANCE_SPRING = { duration: 400, easing: easings.easeOutSine };
 
 export default function Xmb() {
     const isCompact = useIsCompact();
-    const layout = isCompact ? XMB_LAYOUTS.mobile : XMB_LAYOUTS.desktop;
+    const dim = isCompact ? XMB_LAYOUTS.mobile : XMB_LAYOUTS.desktop;
 
     const playTick = useTickSound(
         `${import.meta.env.BASE_URL}sounds/menu-tick.mp3`,
@@ -44,14 +44,14 @@ export default function Xmb() {
         stepItem,
         categoryRef,
         itemRef,
-        stepX: layout.categorySpacing,
-        stepY: layout.itemSpacing,
+        stepX: dim.categorySpacing,
+        stepY: dim.itemSpacing,
     });
 
     const [itemsHidden, setItemsHidden] = useState(false);
     const hasMountedRef = useRef(false);
     const horizontal = useSpring({
-        x: -categoryIndex * layout.categorySpacing,
+        x: -categoryIndex * dim.categorySpacing,
         config: HORIZONTAL_SPRING,
         onRest: () => {
             hasMountedRef.current = true;
@@ -76,17 +76,18 @@ export default function Xmb() {
                 transform: entrance.scale.to((s) => `scale(${s})`),
             }}
         >
-            <XmbStatusBar layout={layout} />
+            <XmbStatusBar />
             <XmbCategoryBar
-                layout={layout}
                 categoryIndex={categoryIndex}
+                categorySpacing={dim.categorySpacing}
                 xValue={horizontal.x}
                 onSelect={setCategory}
             />
             <XmbItemList
-                layout={layout}
                 category={XMB_MENU[categoryIndex]}
                 itemIndex={itemIndex}
+                itemSpacing={dim.itemSpacing}
+                itemOffsetY={dim.itemOffsetY}
                 hidden={itemsHidden}
                 onSelect={setItem}
             />

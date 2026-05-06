@@ -1,30 +1,27 @@
 import { animated, type SpringValue } from "@react-spring/web";
 import { XMB_MENU } from "../lib/xmbMenu";
-import type { XmbLayout } from "../lib/xmbLayouts";
 import XmbIcon from "./XmbIcon";
 
 type XmbCategoryBarProps = {
-    layout: XmbLayout;
     categoryIndex: number;
+    categorySpacing: number;
     xValue: SpringValue<number>;
     onSelect: (index: number) => void;
 };
 
 export default function XmbCategoryBar({
-    layout: L,
     categoryIndex,
+    categorySpacing,
     xValue,
     onSelect,
 }: XmbCategoryBarProps) {
     return (
         <animated.div
-            className="absolute flex items-start"
+            className="absolute flex items-start left-(--xmb-anchor-left) top-(--xmb-anchor-top)"
             style={{
-                left: `${L.anchorLeftVw}vw`,
-                top: `${L.anchorTopVh}vh`,
                 transform: xValue.to(
                     (x) =>
-                        `translate(calc(${x}px - ${L.categorySpacing / 2}px), -50%)`,
+                        `translate(calc(${x}px - ${categorySpacing / 2}px), -50%)`,
                 ),
             }}
         >
@@ -36,25 +33,21 @@ export default function XmbCategoryBar({
                         type="button"
                         onClick={() => onSelect(i)}
                         className="flex flex-col items-center pointer-events-auto cursor-pointer bg-transparent border-0 p-0"
-                        style={{ width: L.categorySpacing }}
+                        style={{ width: categorySpacing }}
                         aria-label={cat.label}
                         aria-current={active ? "true" : undefined}
                     >
                         <XmbIcon
                             icon={cat.icon}
-                            size={L.categoryIconSize}
+                            className="w-16 h-16 compact:w-10 compact:h-10"
                             active={active}
                         />
                         <span
-                            className="mt-3 tracking-wider whitespace-nowrap"
-                            style={{
-                                fontSize: L.categoryLabelPx,
-                                opacity: active ? 1 : 0,
-                                animation: active
-                                    ? "xmb-pulse 1.6s ease-in-out infinite"
-                                    : "none",
-                                textShadow: "0 1px 2px rgba(0,0,0,0.55)",
-                            }}
+                            className={`mt-3 tracking-wider whitespace-nowrap text-[13px] compact:text-[11px] xmb-shadow ${
+                                active
+                                    ? "opacity-100 animate-xmb-pulse"
+                                    : "opacity-0"
+                            }`}
                         >
                             {cat.label}
                         </span>
