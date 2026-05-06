@@ -13,9 +13,7 @@ type XmbStatusBarProps = {
     friendsOnline?: number;
 };
 
-export default function XmbStatusBar({
-    friendsOnline = 0,
-}: XmbStatusBarProps) {
+export default function XmbStatusBar({ friendsOnline = 0 }: XmbStatusBarProps) {
     const [now, setNow] = useState(() => new Date());
 
     useEffect(() => {
@@ -29,15 +27,15 @@ export default function XmbStatusBar({
     }, []);
 
     return (
-        <div className="absolute -right-0.75 top-[4vh] compact:top-[3vh] flex items-center gap-4 text-white whitespace-nowrap leading-none border border-white/20 rounded-md text-lg compact:text-sm px-4.5 py-2.25 compact:px-3.5 compact:py-1.75 xmb-status-shadow">
+        <div className="absolute w-90 compact:w-50 justify-between -right-1 top-[8vh] compact:top-[5vh] flex items-center gap-4 text-white whitespace-nowrap leading-none border border-white/20 rounded-md text-lg/1 compact:text-sm px-4.5 pr-25 py-2 compact:px-3.5 compact:py-1.75 xmb-shadow">
             <span className="flex items-center gap-1.5">
                 <XmbIcon
                     icon="user.svg"
                     className="w-4.5 h-4.5 compact:w-3.5 compact:h-3.5"
                 />
-                <span>{friendsOnline}</span>
+                <span className="text-trim">{friendsOnline}</span>
             </span>
-            <span>{formatDateTime(now)}</span>
+            <span className="text-trim">{formatDateTime(now)}</span>
         </div>
     );
 }
