@@ -1,0 +1,34 @@
+export const XMB_LAYOUTS = {
+    desktop: {
+        categorySpacing: 160,
+        itemSpacing: 56,
+        categoryIconSize: 64,
+        itemIconSize: 36,
+        activeItemIconSize: 44,
+        itemOffsetY: 100,
+        itemGap: 20,
+        anchorLeftVw: 26,
+        anchorTopVh: 38,
+        categoryLabelPx: 13,
+        activeItemLabelPx: 22,
+        itemLabelPx: 16,
+        descriptionPx: 12,
+    },
+    mobile: {
+        categorySpacing: 86,
+        itemSpacing: 46,
+        categoryIconSize: 40,
+        itemIconSize: 26,
+        activeItemIconSize: 32,
+        itemOffsetY: 70,
+        itemGap: 12,
+        anchorLeftVw: 18,
+        anchorTopVh: 34,
+        categoryLabelPx: 11,
+        activeItemLabelPx: 17,
+        itemLabelPx: 13,
+        descriptionPx: 11,
+    },
+} as const;
+
+export type XmbLayout = (typeof XMB_LAYOUTS)[keyof typeof XMB_LAYOUTS];
