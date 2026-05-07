@@ -61,7 +61,7 @@ export default function SplashScreen({
     return (
         <div className="fixed inset-0 z-40 flex items-center justify-end pr-[12vw] pointer-events-none">
             <animated.div
-                className="grid grid-cols-[auto_auto] items-start gap-x-10 text-white"
+                className="grid grid-cols-[auto_auto] items-start gap-x-5 sm:gap-x-10 text-white"
                 style={{
                     opacity: fade.opacity,
                     WebkitMaskImage: reveal.value.to(maskGradient),
@@ -70,17 +70,17 @@ export default function SplashScreen({
             >
                 <span
                     aria-hidden
-                    className="block w-25 h-25 bg-white mask-no-repeat mask-center mask-contain mask-(--logo-mask) m-1"
+                    className="block w-14 h-14 sm:w-25 sm:h-25 bg-white mask-no-repeat mask-center mask-contain mask-(--logo-mask) m-1"
                     style={
                         {
                             "--logo-mask": `url("${logoUrl}")`,
                         } as React.CSSProperties
                     }
                 />
-                <span className="font-ps text-[96px] leading-none tracking-tight">
+                <span className="font-ps text-[56px] sm:text-[96px] leading-none tracking-tight">
                     PS3
                 </span>
-                <span className="font-rodin col-start-2 mt-1 justify-self-center whitespace-nowrap font-rodin text-[11px] tracking-[0.2em] opacity-90">
+                <span className="font-rodin col-start-2 mt-1 justify-self-center whitespace-nowrap font-rodin text-[8px] sm:text-[11px] tracking-[0.2em] opacity-90">
                     PlayStation 3
                 </span>
             </animated.div>
