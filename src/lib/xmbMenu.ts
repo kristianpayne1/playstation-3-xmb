@@ -63,6 +63,12 @@ export const XMB_MENU: XmbCategory[] = [
                 description: "Adjusts settings for this PS3™ system.",
             },
             {
+                id: "theme-settings",
+                label: "Theme Settings",
+                icon: "theme-settings.svg",
+                description: "Adjusts theme settings for the XMB™ Menu.",
+            },
+            {
                 id: "date-time",
                 label: "Date and Time Settings",
                 icon: "date-time-settings.svg",
